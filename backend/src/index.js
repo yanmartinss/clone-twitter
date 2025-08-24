@@ -1,17 +1,22 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
+import helmet from "helmet";
+import { mainRouter } from "./routes/main.js";
 
 dotenv.config();
 
 const app = express();
 
+app.use(helmet());
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Rotas
+// Routes
+app.use("/api", mainRouter);
 
+// Tratamento de erros
 app.use((req, res) => {
   res.status(404).json({ error: "Endpoint não encontrado" });
 });
@@ -24,6 +29,7 @@ const errorHandler = (err, req, res, next) => {
 };
 app.use(errorHandler);
 
-app.listen(process.env.PORT, () => {
-  console.log(`server at running in http://localhost:${process.env.PORT}`);
+// Rodando o server
+app.listen(process.env.PORT || 3000, () => {
+  console.log(`server at running in ${process.env.BASE_URL}`);
 });
